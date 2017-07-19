@@ -10,7 +10,8 @@ var baseConfig = {
         libraryTarget: 'umd',
         umdNamedDefine: true
     },
-    devtool:'source-map'
+    devtool:'source-map',
+    watch: true
 }
 
 module.exports = baseConfig;
