@@ -1,10 +1,9 @@
 // Karma configuration
-// Generated on Mon Jul 17 2017 16:03:56 GMT+0800 (CST)
-var webpackConfig = require('../webpack.config.js');
-webpackConfig.entry = {};
+// Generated on Thu Jul 20 2017 17:12:41 GMT+0800 (CST)
+
 module.exports = function(config) {
   config.set({
-    webpack: webpackConfig,
+
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
@@ -16,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'spec/**/*.js'
+      'spec/**/*Spec.js'
     ],
 
 
@@ -24,17 +23,25 @@ module.exports = function(config) {
     exclude: [
     ],
 
+
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'spec/**/*.js': ['webpack']
+      'spec/**/*Spec.js': ['webpack']
     },
-
+    webpack: {
+        devtool: 'inline-source-map',
+        resolve: {
+            alias: {
+                '@': './../../src'
+            }
+        }
+    },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'kjhtml'],
 
 
     // web server port

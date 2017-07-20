@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -78,16 +78,35 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__observer__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Watcher__ = __webpack_require__(4);
+/* harmony export (immutable) */ __webpack_exports__["a"] = def;
+/* harmony export (immutable) */ __webpack_exports__["b"] = parsePath;
+function def (obj, key, val, enumerable = true) {
+  Object.defineProperty(obj, key, {
+    value: val,
+    enumerable: enumerable,
+    writable: true,
+    configurable: true
+  })
+}
 
 
-
-window.a = new __WEBPACK_IMPORTED_MODULE_0__observer__["a" /* Observer */]({name:'cc'});
-new __WEBPACK_IMPORTED_MODULE_1__Watcher__["a" /* Watcher */](a, 'name', function (newVal, oldVal) {
-	console.info(`newValue is ${newVal} ---- oldValue is ${oldVal}`);
-})
+/**
+ * Parse simple path.
+ */
+const bailRE = /[^\w.$]/
+function parsePath (path) {
+  if (bailRE.test(path)) {
+    return
+  }
+  const segments = path.split('.')
+  return function (obj) {
+    for (let i = 0; i < segments.length; i++) {
+      if (!obj) return
+      obj = obj[segments[i]]
+    }
+    return obj
+  }
+}
 
 
 /***/ }),
@@ -95,9 +114,66 @@ new __WEBPACK_IMPORTED_MODULE_1__Watcher__["a" /* Watcher */](a, 'name', functio
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (immutable) */ __webpack_exports__["c"] = pushTarget;
+/* harmony export (immutable) */ __webpack_exports__["b"] = popTarget;
+let uid = 0;
+class Dep {
+	constructor () {
+		this.id = uid++;
+		this.subs = [];	
+	}
+	addSub (subWatcher) {
+		this.subs.push(subWatcher);
+	}	
+	notify () {
+		this.subs.forEach(sub => {
+			sub.update();	
+		})
+	}
+	depend () {
+		if (Dep.target)	{
+			Dep.target.addDep(this);	
+		}
+	}
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Dep;
+
+
+Dep.target = null;
+
+function pushTarget (_targetWatcher) {
+	Dep.target = _targetWatcher;
+}
+
+function popTarget () {
+	Dep.target = null;	
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__observer__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Watcher__ = __webpack_require__(4);
+
+
+
+window.a = new __WEBPACK_IMPORTED_MODULE_0__observer__["a" /* Observer */]({person:{name:'cc'}});
+new __WEBPACK_IMPORTED_MODULE_1__Watcher__["a" /* Watcher */](a, 'person.name', function (newVal, oldVal) {
+	console.info(`newValue is ${newVal} ---- oldValue is ${oldVal}`);
+})
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* unused harmony export defineReactive */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dep__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__util__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dep__ = __webpack_require__(1);
 
 
 
@@ -153,88 +229,12 @@ function defineReactive (
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = def;
-/* harmony export (immutable) */ __webpack_exports__["b"] = parsePath;
-function def (obj, key, val, enumerable = true) {
-  Object.defineProperty(obj, key, {
-    value: val,
-    enumerable: enumerable,
-    writable: true,
-    configurable: true
-  })
-}
-
-
-/**
- * Parse simple path.
- */
-const bailRE = /[^\w.$]/
-function parsePath (path) {
-  if (bailRE.test(path)) {
-    return
-  }
-  const segments = path.split('.')
-  return function (obj) {
-    for (let i = 0; i < segments.length; i++) {
-      if (!obj) return
-      obj = obj[segments[i]]
-    }
-    return obj
-  }
-}
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["c"] = pushTarget;
-/* harmony export (immutable) */ __webpack_exports__["b"] = popTarget;
-let uid = 0;
-class Dep {
-	constructor () {
-		this.id = uid++;
-		this.subs = [];	
-	}
-	addSub (subWatcher) {
-		this.subs.push(subWatcher);
-	}	
-	notify () {
-		this.subs.forEach(sub => {
-			sub.update();	
-		})
-	}
-	depend () {
-		if (Dep.target)	{
-			Dep.target.addDep(this);	
-		}
-	}
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Dep;
-
-
-Dep.target = null;
-
-function pushTarget (_targetWatcher) {
-	Dep.target = _targetWatcher;
-}
-
-function popTarget () {
-	Dep.target = null;	
-}
-
-/***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dep__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util__ = __webpack_require__(0);
 
 
 class Watcher {
