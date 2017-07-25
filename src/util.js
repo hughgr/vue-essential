@@ -7,7 +7,9 @@ export function def (obj, key, val, enumerable = true) {
   })
 }
 
-
+export function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
 /**
  * Parse simple path.
  */

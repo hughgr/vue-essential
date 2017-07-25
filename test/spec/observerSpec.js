@@ -53,5 +53,62 @@ describe('ObserverTest', () => {
 		expect(anotherObj.name).toBe('dd_changed');
 	})
 
+	it('nested object should also working', () => {
+		var nestedObj = {
+			person: {
+				name: 'cc'
+			}
+		}	
+		var nestedObserver = new Observer(nestedObj);
+		var spy = jasmine.createSpy('spy');
+		new Watcher(nestedObserver, 'person.name', spy);
+		expect(spy).not.toHaveBeenCalled();
+		nestedObj.person.name = 'dd';
+		expect(spy).toHaveBeenCalled();
+	})
 
+	it('set an object to a exits reactive model', () => {
+		var nestedObj = {
+			person: {
+				name: 'cc'
+			}
+		}	
+		var nestedObserver = new Observer(nestedObj);
+		var spy = jasmine.createSpy('spy');
+		new Watcher(nestedObserver, 'person.name', spy);
+		nestedObj.person.name = 'dd';
+		expect(spy).toHaveBeenCalledTimes(1);
+		nestedObj.person = {name: 'dd'};
+		expect(spy).toHaveBeenCalledTimes(1);
+		nestedObj.person = {name: 'ee'};
+		expect(spy).toHaveBeenCalledTimes(2);
+	});
+
+	it('difference between setting an object and setting a primitive value', () => {
+		var nestedObj = {
+			person: {
+				name: 'cc'
+			}
+		}	
+		var nestedObserver = new Observer(nestedObj);
+		var spy = jasmine.createSpy('spy');
+		new Watcher(nestedObserver, 'person.name', spy);
+		nestedObj.person.name = 'dd';
+		expect(spy).toHaveBeenCalledTimes(1);
+		nestedObj.person = {name: 'ee'};
+		expect(spy).toHaveBeenCalledTimes(2);
+	});
+
+	it('replace an none exits object to reactive object should also trigger change', () => {
+		var nestedObj = {
+			person: {
+				name: 'cc'
+			}
+		}	
+		var nestedObserver = new Observer(nestedObj);
+		var spy = jasmine.createSpy('spy');
+		new Watcher(nestedObserver, 'person.name', spy);
+		nestedObj.person = {age: 11};
+		expect(spy).toHaveBeenCalled();
+	});	
 });
