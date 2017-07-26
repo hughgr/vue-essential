@@ -1,5 +1,6 @@
 import {Observer} from '@/observer';
 import {Watcher} from '@/watcher';
+import Vue from '@/index';
 
 describe('ObserverTest', () => {
 	var observer, plainObj;
@@ -31,7 +32,7 @@ describe('ObserverTest', () => {
 			}
 		}
 		spyOn(callback, 'fn');
-		new Watcher(observer, 'name', callback.fn);	
+		new Watcher(plainObj, 'name', callback.fn);	
 		plainObj.name = 'dd';
 		expect(callback.fn).toHaveBeenCalled();
 	});
@@ -45,8 +46,8 @@ describe('ObserverTest', () => {
 		}
 		var spyAnotherObj = jasmine.createSpy('spy');
 		spyOn(callback, 'fn').and.callThrough();
-		new Watcher(observer, 'name', callback.fn)
-		new Watcher(anotherObserver, 'name', spyAnotherObj)
+		new Watcher(plainObj, 'name', callback.fn)
+		new Watcher(anotherObj, 'name', spyAnotherObj)
 
 		plainObj.name = 'dd';
 		expect(spyAnotherObj).toHaveBeenCalled();		
@@ -61,7 +62,7 @@ describe('ObserverTest', () => {
 		}	
 		var nestedObserver = new Observer(nestedObj);
 		var spy = jasmine.createSpy('spy');
-		new Watcher(nestedObserver, 'person.name', spy);
+		new Watcher(nestedObj, 'person.name', spy);
 		expect(spy).not.toHaveBeenCalled();
 		nestedObj.person.name = 'dd';
 		expect(spy).toHaveBeenCalled();
@@ -75,7 +76,7 @@ describe('ObserverTest', () => {
 		}	
 		var nestedObserver = new Observer(nestedObj);
 		var spy = jasmine.createSpy('spy');
-		new Watcher(nestedObserver, 'person.name', spy);
+		new Watcher(nestedObj, 'person.name', spy);
 		nestedObj.person.name = 'dd';
 		expect(spy).toHaveBeenCalledTimes(1);
 		nestedObj.person = {name: 'dd'};
@@ -92,7 +93,7 @@ describe('ObserverTest', () => {
 		}	
 		var nestedObserver = new Observer(nestedObj);
 		var spy = jasmine.createSpy('spy');
-		new Watcher(nestedObserver, 'person.name', spy);
+		new Watcher(nestedObj, 'person.name', spy);
 		nestedObj.person.name = 'dd';
 		expect(spy).toHaveBeenCalledTimes(1);
 		nestedObj.person = {name: 'ee'};
@@ -107,8 +108,47 @@ describe('ObserverTest', () => {
 		}	
 		var nestedObserver = new Observer(nestedObj);
 		var spy = jasmine.createSpy('spy');
-		new Watcher(nestedObserver, 'person.name', spy);
+		new Watcher(nestedObj, 'person.name', spy);
 		nestedObj.person = {age: 11};
 		expect(spy).toHaveBeenCalled();
 	});	
 });
+
+describe('VueTest', () => {
+	var spy = jasmine.createSpy('spy');
+	var vm = new Vue({
+		data () {
+			return {
+				person: {
+					name: 'cc',
+				},
+				changeTimes: 0
+			}	
+		},
+		watch: {
+			'person.name': function (newVal, oldVal) {
+				this.changeTimes++;
+			},
+			'person': spy
+		}
+	}); 
+	it('vue should work now', () => {
+		expect(vm.person.name).toBe('cc');
+	})
+	it('changeTimes should still be zero', () => {
+		vm.person.name = 'cc';
+		expect(vm.changeTimes).toBe(0);
+	})
+	it('changeTimes should be one', () => {
+		vm.person.name = 'dd';	
+		expect(vm.changeTimes).toBe(1);
+	})
+	it('changeTimes should be two & spy should be called', () => {
+		vm.person = {name: 'dd'};
+		expect(vm.changeTimes).toBe(1);
+		expect(spy).toHaveBeenCalled();
+		vm.person = {name: 'ee'};
+		expect(vm.changeTimes).toBe(2);
+		expect(spy).toHaveBeenCalledTimes(2);
+	})
+})

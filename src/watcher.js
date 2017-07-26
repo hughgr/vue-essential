@@ -21,7 +21,7 @@ export class Watcher {
 	get () {
 		pushTarget(this);
 		let value;
-		value = this.getter.call(this.vm, this.vm.value);
+		value = this.getter.call(this.vm, this.vm);
 		popTarget();
 		return value;
 	}
@@ -47,5 +47,9 @@ export class Watcher {
 			this.value = value;
 			this.cb.call(this.vm, value, oldValue);
 		}
+	}
+
+	teardown () {
+		//todo
 	}
 }
